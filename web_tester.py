@@ -9,6 +9,7 @@ import requests
 from requests.exceptions import RequestException
 from urllib.parse import urlparse
 from cookie_parser import parse_cookies, print_cookie_list
+from auth_checker import check_password_protection, format_auth_result
 
 
 def main():
@@ -44,14 +45,20 @@ def main():
         # Determine HTTP/2 support
         supports_http2 = "yes" if http_version == "2.0" or "h2" in response.headers.get('alt-svc', '').lower() else "no"
         
+        # Check for password protection
+        auth_info = check_password_protection(url)
+        password_protected = format_auth_result(auth_info)
+        
         # Print formatted output
         print(f"website: {website}")
         print(f"1. Supports http2: {supports_http2}")
-        print("2. List of Cookies:")
+        print(f"2. List of Cookies:")
         
         # Parse and print cookies using the cookie_parser module
         cookie_list = parse_cookies(response)
         print_cookie_list(cookie_list)
+        
+        print(f"3. Password-protected: {password_protected}")
         
     except KeyboardInterrupt:
         print("\nOperation cancelled by user", file=sys.stderr)
