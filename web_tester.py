@@ -7,8 +7,8 @@ Takes a URL from stdin and sends an HTTP GET request, printing the results.
 import sys
 import requests
 from requests.exceptions import RequestException
-from datetime import datetime
 from urllib.parse import urlparse
+from cookie_parser import parse_cookies, print_cookie_list
 
 
 def main():
@@ -49,70 +49,9 @@ def main():
         print(f"1. Supports http2: {supports_http2}")
         print("2. List of Cookies:")
         
-        # Parse cookies
-        cookies_found = False
-        
-        # Method 1: Using response.cookies (parsed cookies)
-        if response.cookies:
-            cookies_found = True
-            for cookie in response.cookies:
-                cookie_info = f"cookie name: {cookie.name}"
-                
-                # Add expiration time if available
-                if cookie.expires:
-                    expire_date = datetime.fromtimestamp(cookie.expires)
-                    expires_str = expire_date.strftime('%a, %d-%b-%Y %H:%M:%S GMT')
-                    cookie_info += f", expires time: {expires_str}"
-                
-                # Add domain if available
-                if cookie.domain:
-                    cookie_info += f", domain name: {cookie.domain}"
-                
-                print(cookie_info)
-        
-        # Method 2: Parse Set-Cookie headers directly for additional cookies
-        set_cookie_headers = []
-        if hasattr(response.headers, 'get_list'):
-            set_cookie_headers = response.headers.get_list('Set-Cookie')
-        elif 'Set-Cookie' in response.headers:
-            # Handle single Set-Cookie header
-            set_cookie_headers = [response.headers['Set-Cookie']]
-        
-        # Parse raw Set-Cookie headers for any missed cookies
-        for cookie_header in set_cookie_headers:
-            # Simple parsing of Set-Cookie header
-            parts = cookie_header.split(';')
-            if parts:
-                name_value = parts[0].strip()
-                if '=' in name_value:
-                    cookie_name = name_value.split('=')[0].strip()
-                    
-                    # Check if we already processed this cookie
-                    already_processed = False
-                    if response.cookies:
-                        for existing_cookie in response.cookies:
-                            if existing_cookie.name == cookie_name:
-                                already_processed = True
-                                break
-                    
-                    if not already_processed:
-                        cookies_found = True
-                        cookie_info = f"cookie name: {cookie_name}"
-                        
-                        # Look for expires and domain in the parts
-                        for part in parts[1:]:
-                            part = part.strip().lower()
-                            if part.startswith('expires='):
-                                expires_value = part.split('=', 1)[1]
-                                cookie_info += f", expires time: {expires_value}"
-                            elif part.startswith('domain='):
-                                domain_value = part.split('=', 1)[1]
-                                cookie_info += f", domain name: {domain_value}"
-                        
-                        print(cookie_info)
-        
-        if not cookies_found:
-            print("No cookies found")
+        # Parse and print cookies using the cookie_parser module
+        cookie_list = parse_cookies(response)
+        print_cookie_list(cookie_list)
         
     except KeyboardInterrupt:
         print("\nOperation cancelled by user", file=sys.stderr)
