@@ -10,6 +10,7 @@ from requests.exceptions import RequestException
 from urllib.parse import urlparse
 from cookie_parser import parse_cookies, print_cookie_list
 from auth_checker import check_password_protection, format_auth_result
+from http2_checker import check_http2_support, format_http2_result
 
 
 def main():
@@ -36,14 +37,9 @@ def main():
         parsed_url = urlparse(response.url)
         website = parsed_url.netloc
         
-        # Check HTTP version
-        http_version = "Unknown"
-        if hasattr(response.raw, 'version'):
-            version_map = {9: "0.9", 10: "1.0", 11: "1.1", 20: "2.0"}
-            http_version = version_map.get(response.raw.version, f"Unknown ({response.raw.version})")
-        
-        # Determine HTTP/2 support
-        supports_http2 = "yes" if http_version == "2.0" or "h2" in response.headers.get('alt-svc', '').lower() else "no"
+        # Check for HTTP/2 support using improved detection
+        http2_info = check_http2_support(url)
+        supports_http2 = format_http2_result(http2_info)
         
         # Check for password protection
         auth_info = check_password_protection(url)

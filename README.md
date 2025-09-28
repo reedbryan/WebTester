@@ -1,11 +1,15 @@
 # Web Tester
 
-A simple Python program that takes a URL input from stdin, sends an HTTP GET request, and prints the results to the terminal.
+A Python program that analyzes websites for HTTP/2 support, cookie information, and password protection. Takes a URL input and provides detailed analysis in a clean, formatted output.
 
 ## Files
 
-- `web_tester.py` - Main version using the `requests` library (recommended)
+- `web_tester.py` - Main program that analyzes URLs for HTTP/2 support, cookies, and password protection
+- `cookie_parser.py` - Module for extracting and formatting cookie information from HTTP responses
+- `auth_checker.py` - Module for detecting password-protected URLs and authentication requirements  
+- `http2_checker.py` - Module for detecting if a website supports HTTP2
 - `requirements.txt` - Dependencies for the main version
+- `.gitignore` - Git ignore file for Python projects
 
 ## Installation and Usage
 
@@ -21,48 +25,29 @@ A simple Python program that takes a URL input from stdin, sends an HTTP GET req
 
 3. Enter a URL when prompted (e.g., `google.com` or `uvic.ca`)
 
-## Features
-
-- Accepts URLs with or without protocol (automatically adds http:// if missing)
-- Displays comprehensive response information:
-  - Status code and reason
-  - Final URL (after redirects)
-  - Response headers
-  - Content length and type
-  - Response body (truncated if very long)
-- Handles binary content gracefully
-- Error handling for various network issues
-- Timeout protection (10 seconds)
-
 ## Examples
 
 ```bash
 $ python web_tester.py
-Enter a URL: httpbin.org/json
-Sending request to: http://httpbin.org/json
---------------------------------------------------
-Status Code: 200
-Status Text: OK
-URL: https://httpbin.org/json
-Content Length: 429 bytes
-Content Type: application/json
+Enter a URL: google.com
 
-Response Headers:
-------------------------------
-Date: Fri, 27 Sep 2025 10:30:00 GMT
-Content-Type: application/json
-Content-Length: 429
-...
+website: www.google.com
+1. Supports http2: no
+2. List of Cookies:
+cookie name: AEC, expires time: Thu, 26-Mar-2026 16:12:14 GMT, domain name: .google.com
+cookie name: NID, expires time: Sun, 29-Mar-2026 16:12:14 GMT, domain name: .google.com
+3. Password-protected: no - No authentication required
+```
 
-Response Body:
-------------------------------
-{
-  "slideshow": {
-    "author": "Yours Truly",
-    "date": "date of publication",
-    ...
-  }
-}
+```bash
+$ python web_tester.py  
+Enter a URL: httpbin.org/basic-auth/user/pass
+
+website: httpbin.org
+1. Supports http2: no
+2. List of Cookies:
+No cookies found
+3. Password-protected: yes - Password protection detected (401 Unauthorized) - Basic (Realm: Fake Realm)
 ```
 
 ## Error Handling
