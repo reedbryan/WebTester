@@ -25,6 +25,8 @@ A Python program that analyzes websites for HTTP/2 support, cookie information, 
 
 3. Enter a URL when prompted (e.g., `google.com` or `uvic.ca`)
 
+4. Enter "exit" or "quit" to exit the program
+
 ## Examples
 
 ```bash

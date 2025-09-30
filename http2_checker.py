@@ -6,6 +6,10 @@ Detects HTTP/2 support using multiple methods since Python requests doesn't nati
 
 import requests
 from requests.exceptions import RequestException
+import urllib3
+
+# Disable SSL warnings since we're intentionally using verify=False for HTTP/2 detection
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def check_http2_support(url, timeout=10):
