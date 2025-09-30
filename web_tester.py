@@ -43,7 +43,6 @@ def main():
                 
                 # Extract website name from URL
                 parsed_url = urlparse(response.url)
-                website = parsed_url.netloc
                 
                 # Check for HTTP/2 support using improved detection
                 http2_info = check_http2_support(url)
@@ -54,7 +53,6 @@ def main():
                 password_protected = format_auth_result(auth_info)
                 
                 # Print formatted output
-                print(f"website: {website}")
                 print(f"1. Supports http2: {supports_http2}")
                 print(f"2. List of Cookies:")
                 
